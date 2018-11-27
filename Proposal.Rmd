@@ -24,7 +24,7 @@ In statistics, errors-in-variables models or measurement error models are regres
 
 In the case when some regressors have been measured with errors, estimation based on the standard assumption leads to inconsistent estimates, meaning that the parameter estimates do not tend to the true values even in very large samples. For simple linear regression the effect is an underestimate of the coefficient, known as the attenuation bias. In non-linear models the direction of the bias is likely to be more complicated.
 
-We are going to apply the errors-in-variables model to generalized regression. We choose logistic regression as an example to show how does the errors-in-variables model work.
+We are going to apply the errors-in-variables model to generalized regression. We choose logistic regression as an example to show how the errors-in-variables model works.
 
 
 
