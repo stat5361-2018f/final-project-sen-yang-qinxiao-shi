@@ -1,5 +1,5 @@
 ---
-title: "Credit Card Fraud Detection"
+title: "Errors-in-variables Model in Generalized Regression"
 subtitle: "Final project"
 author: Qinxiao Shi & Sen Yang
 date: "`r format(Sys.time(), '%d %B %Y')`"
@@ -11,28 +11,22 @@ fontsize: 11pt
 bibliography: Format.bib
 biblio-style: asa
 ---
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+```{r fig.height=3.5, fig.width=3.5, fig.align='center',echo=FALSE}
+library(png)
+library(grid)
+img <- readPNG("Visualization_of_errors-in-variables_linear_regression.png")
+grid.raster(img)
 ```
 
-# Overview
-https://www.kaggle.com/mlg-ulb/creditcardfraud
-It is important that credit card companies are able to recognize fraudulent credit card transactions so that customers are not charged for items that they did not purchase. 
+# Motivation
+In statistics, errors-in-variables models or measurement error models are regression models that account for measurement errors in the independent variables. 
 
-# Dataset Description
-1.	This dataset presents transactions that occurred in two days, where the record has 492 frauds out of 284,807 transactions. 
-2.	The dataset is highly unbalanced, the positive class (frauds) account for 0.172% of all transactions. 
-3.	The original features and more background information about the data are not provided due to confidentiality issues. 
-4.	Features V1, V2, ... V28 are the principal components obtained with PCA transactions, the only features which have not been transformed with PCA are 'Time' and 'Amount'. 
-    1)	Feature 'Time' contains the seconds elapsed between each transaction and the first transaction in the dataset. 
-    2)	The feature 'Amount' is the transaction amount, this feature can be used for example-dependant cost-senstive learning. Feature 'Class' is the response variable and it takes value 1 in case of fraud and 0 otherwise.
-    
-# Goal
-Identify fraudulent credit card transactions.
+In the case when some regressors have been measured with errors, estimation based on the standard assumption leads to inconsistent estimates, meaning that the parameter estimates do not tend to the true values even in very large samples. For simple linear regression the effect is an underestimate of the coefficient, known as the attenuation bias. In non-linear models the direction of the bias is likely to be more complicated.
 
-# Method
-Measure the accuracy using the Area Under the Precision-Recall Curve (AUPRC), and get the point where AUPRC is the largest.
-The method for determining largest AUPRC is EM algorithm.
+We are going to apply the errors-in-variables model to generalized regression. We choose logistic regression as an example to show how does the errors-in-variables model work.
+
+
 
 # Reference
-Andrea Dal Pozzolo, Olivier Caelen, Reid A. Johnson and Gianluca Bontempi. Calibrating Probability with Undersampling for Unbalanced Classification. In Symposium on Computational Intelligence and Data Mining (CIDM), IEEE, 2015
+https://en.wikipedia.org/wiki/Errors-in-variables_models
