@@ -133,8 +133,6 @@ For simplicity, we assume
 
 - $\boldsymbol{x_i}=(1,X_1,X_2,X_3)$ with $X_1\sim N(10,1^2)$, $X_2\sim N(20,3^2)$ and $X_3\sim N(-40,2^2)$.
 
-- $\boldsymbol{\beta}=(\beta_0,\beta_1,\beta_2,\beta_3)$ with $\beta_0=5$, $\beta_1=0.5$, $\beta_2=1.5$, $\beta_3=1$.
-
 - $m=10,n=1000$
 
 By our assumption, $y_i=\frac{1}{1+\exp(-\beta_0-\beta_1X_1-\beta_2X_2-\beta_3X_3)}+\epsilon_i$ with $\epsilon_i\sim N(0,1)\; i.i.d.$. 
