@@ -59,6 +59,12 @@ If there is measurement errors for indenpendent variables in a logistic regressi
 
 Suppose that for $i=1,...,n$, $Z_i\sim Binomial(m_i,p_i)$, and let $Y_i=\frac{Z_i}{m_i}$ denote the binomial proportion for the $i^{th}$ case, where $m_i$ is known and $p_i$ depends on the vector of covariates $\boldsymbol{x_i}=(1,X_{i1},X_{i2},...,X_{ik})^{\prime}$. Let $z_i$ be the observed binomial response taking values $0,1,...,m_i$ with $y_i=z_i/m_i$.
 
+The regression model for a binomial proportion is 
+\begin{align*}
+  Z_i \mid p_i\sim Bin(m_i,p_i) \\
+  logit(p_i) =\eta_i=\boldsymbol{x_i}'\boldsymbol{\beta}
+\end{align*}
+
 Suppose $\widetilde{\boldsymbol{x_i}}$ is the vector of observed variables and $\boldsymbol{x_i}$ is the vector of latent or true variables. Let $\boldsymbol{u_i}$ be the vector of errors of observation such that,
 $$\widetilde{\boldsymbol{x_i}}=\boldsymbol{x_i}+\boldsymbol{u_i}$$
 For each $i=1,...,n$, suppose we make ***m*** measurements for covariates $\boldsymbol{x_i}$, then corresponding matrices for observations, true values and errors are
@@ -66,9 +72,10 @@ $$\widetilde{\mathbf{X_i}}=\left[\begin{array}{cc} \widetilde{\boldsymbol{x_{i1}
 where $\widetilde{\boldsymbol{x_{ij}}}$ is the observation vector and $\boldsymbol{x_{i}}$ is the true value vector, and $\boldsymbol{u_{ij}}$ is the corresponding error vector for $j=1,2,...,m$ such that
 $$\widetilde{\mathbf{X_i}}=\mathbf{X_i}+\mathbf{U_i}$$
 
-Here, we assume that $\boldsymbol{u_{i1}},\boldsymbol{u_{i2}},...,\boldsymbol{u_{im}} \sim \mathcal{N}_k(\boldsymbol{0},\Sigma_i)\;i.i.d.$ and $\boldsymbol{u_{i}}$ is independent of $\boldsymbol{x_{i}}$.
+Here, we assume that $\boldsymbol{u_{i1}},\boldsymbol{u_{i2}},...,\boldsymbol{u_{im}} \sim \mathcal{N}_k(\boldsymbol{0},\Sigma_i)\;i.i.d.$ and $\boldsymbol{u_{i}}$ is independent of $\boldsymbol{x_{i}}$. The variance-corariance matrix of all errors will be
+$$\Sigma_u= \begin{bmatrix} \Sigma_1 & 0 & 0 & \dots &0 \\ 0&\Sigma_2&0&\dots&0 \\ 0&0&\Sigma_3&\dots&0 \\ \vdots&\vdots &\vdots&\ddots&\vdots\\ 0&0&0&\dots&\Sigma_n \end{bmatrix}$$
 
-Therefore, the erorrs-in-variables logistic regression model is 
+The erorrs-in-variables logistic regression model is 
 
 $$\left\{ \begin{array}{@{}ll@{}} \widetilde{\boldsymbol{x_i}}=\boldsymbol{x_i}+\boldsymbol{u_i} \\
 \boldsymbol{y_i} = \frac{1}{1+\exp(-\boldsymbol{x_i'}\boldsymbol{\beta})}+\boldsymbol{\epsilon_i} \end{array}\right. \hspace{2cm} for\; i=1,2,...,n\quad \text{with m observations for each}\; \boldsymbol{x_{i}}.$$
@@ -113,7 +120,7 @@ where $\Dot{\mu_i}=\frac{d \mu_i(\boldsymbol{x_i})}{d \eta_i(\boldsymbol{x_i})}$
 Now, we can substract this bias at the begining so that we can get an unbiased estimation by solving a non-linear eqution of $\boldsymbol{\beta}$.
 $$\mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]-B\}=0.$$
 By Monte Carlo method,
-$$\frac1m\sum_{j=1}^m\widetilde{\boldsymbol{x}}_{im}[y_{im}-\mu_i(\widetilde{\boldsymbol{x}}_{im})]+\hat{\Sigma_i}\boldsymbol{\beta} \dot{\mu_i}=0.$$
+$$\frac1{N}\sum_{i=1}^n\sum_{j=1}^m\widetilde{\boldsymbol{x}}_{im}[y_{i}-\mu_i(\widetilde{\boldsymbol{x}}_{im})]+\frac1{n}\sum_{i=1}^n\hat{\Sigma_i}\boldsymbol{\beta} \dot{\mu_i}=0.$$
 Finally, we get a non-linear equation of $\boldsymbol{\beta}$. Solving it by function ***nleqslv*** in R, we will get an unbiased estimation of parameters $\hat{\boldsymbol{\beta}}$.
 
 # Simulation Study
