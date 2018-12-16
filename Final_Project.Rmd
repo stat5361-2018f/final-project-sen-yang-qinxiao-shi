@@ -1,0 +1,129 @@
+---
+title: "An Unbiased Estimation Method of Errors-in-Variables Logistic Regression Model"
+author:
+  - Sen Yang^[<sen.2.yang@uconn.edu>; M.S. student at
+    Department of Statistics, University of Connecticut.] &
+    Qinxiao Shi^[<qinxiao.shi@uconn.edu>; M.S. student at
+    Department of Statistics, University of Connecticut.]
+date: "`r format(Sys.time(), '%d %B %Y')`"
+documentclass: article
+papersize: letter
+fontsize: 11pt
+bibliography: template.bib
+biblio-style: asa
+output:
+  bookdown::pdf_document2
+abstract:
+  An Unbiased Estimation Method of Errors-in-Variables Logistic Regression Model
+---
+
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+## some utility functions, see the source code for details
+source("utils_template.R")
+
+## specify the packages needed
+pkgs <- c("DT", "leaflet", "splines2", "webshot")
+need.packages(pkgs)
+
+## external data can be read in by regular functions,
+## such as read.table or load
+
+## for latex and html output
+isHtml <- knitr::is_html_output()
+isLatex <- knitr::is_latex_output()
+latex <- ifelse(isLatex, '\\LaTeX\\', 'LaTeX')
+
+## specify global chunk options
+knitr::opts_chunk$set(fig.width = 5, fig.height = 4, dpi = 300,
+                      out.width = "90%", fig.align = "center")
+
+```
+
+
+# Introduction
+
+In statistics, errors-in-variables models or measurement error models are regression models that account for measurement errors in the independent variables. In the case when some regressors have been measured with errors, estimation based on the standard assumption leads to inconsistent estimates, meaning that the parameter estimates do not tend to the true values even in very large samples. 
+
+For simple linear regression the effect is an underestimate of the coefficient, known as the attenuation bias. It is well known that if independent variables are measured with erorrs, the ordinary least squared estimates are not unbiased. This is also true for logistic regression models. 
+
+With a canonical link function, a logistic regression model will be fomulated as:
+$$Y_i=\frac{1}{1+\exp(-\boldsymbol{x'}\boldsymbol{\beta})}+\epsilon_i$$
+where $Y_i$ denotes the binomial proportion (for a binomial regression model), $\epsilon_i$ denotes the error of response, $\boldsymbol{x}$ denotes independent variables and $\boldsymbol{\beta}$ denotes the parameters for the model. 
+
+If there is measurement errors for indenpendent variables in a logistic regression model, the estimates are not unbiased in terms of response and predicted response. This project will introduce an unbiased estimation method to remedy attenuation bias so that we could get a better estimates of parameters for logistic regression models with observation errors.
+
+# Model
+
+## Errors-in-Variables Logistic Regression Model
+
+Suppose that for $i=1,...,n$, $Z_i\sim Binomial(m_i,p_i)$, and let $Y_i=\frac{Z_i}{m_i}$ denote the binomial proportion for the $i^{th}$ case, where $m_i$ is known and $p_i$ depends on the vector of covariates $\boldsymbol{x_i}=(1,X_{i1},X_{i2},...,X_{ik})^{\prime}$. Let $z_i$ be the observed binomial response taking values $0,1,...,m_i$ with $y_i=z_i/m_i$.
+
+Suppose $\widetilde{\boldsymbol{x_i}}$ is the vector of observed variables and $\boldsymbol{x_i}$ is the vector of latent or true variables. Let $\boldsymbol{u_i}$ be the vector of errors of observation such that,
+$$\widetilde{\boldsymbol{x_i}}=\boldsymbol{x_i}+\boldsymbol{u_i}$$
+For each $i=1,...,n$, suppose we make ***m*** measurements for covariates $\boldsymbol{x_i}$, then corresponding matrices for observations, true values and errors are
+$$\widetilde{\mathbf{X_i}}=\left[\begin{array}{cc} \widetilde{\boldsymbol{x_{i1}}^{\prime}} \\ \widetilde{\boldsymbol{x_{i2}}^{\prime}} \\ \vdots \\ \widetilde{\boldsymbol{x_{im}}^{\prime}} \end{array}  \right] \hspace{1.5cm} \mathbf{X_i}=\left[\begin{array}{cc} \boldsymbol{x_{i}}^{\prime} \\ \boldsymbol{x_{i}}^{\prime} \\ \vdots \\ \boldsymbol{x_{i}}^{\prime} \end{array}  \right] \hspace{1.5cm} \boldsymbol{U_i} = \left[\begin{array}{cc} \boldsymbol{u_{i1}}^{\prime} \\ \boldsymbol{u_{i2}}^{\prime} \\ \vdots \\ \boldsymbol{u_{im}}^{\prime} \end{array}  \right]$$
+where $\widetilde{\boldsymbol{x_{ij}}}$ is the observation vector and $\boldsymbol{x_{i}}$ is the true value vector, and $\boldsymbol{u_{ij}}$ is the corresponding error vector for $j=1,2,...,m$ such that
+$$\widetilde{\mathbf{X_i}}=\mathbf{X_i}+\mathbf{U_i}$$
+
+Here, we assume that $\boldsymbol{u_{i1}},\boldsymbol{u_{i2}},...,\boldsymbol{u_{im}} \sim \mathcal{N}_k(\boldsymbol{0},\Sigma_i)\;i.i.d.$ and $\boldsymbol{u_{i}}$ is independent of $\boldsymbol{x_{i}}$.
+
+Therefore, the erorrs-in-variables logistic regression model is 
+
+$$\left\{ \begin{array}{@{}ll@{}} \widetilde{\boldsymbol{x_i}}=\boldsymbol{x_i}+\boldsymbol{u_i} \\
+\boldsymbol{y_i} = \frac{1}{1+\exp(-\boldsymbol{x_i'}\boldsymbol{\beta})}+\boldsymbol{\epsilon_i} \end{array}\right. \hspace{2cm} for\; i=1,2,...,n\quad \text{with m observations for each}\; \boldsymbol{x_{i}}.$$
+
+## Estimation Method
+
+Let $\mu_i(\boldsymbol{x_i})=\hat{p_i}=\frac{1}{1+\exp(-\boldsymbol{x_i'}\hat{\boldsymbol{\beta}})}$ be the estimated probability by true data $\boldsymbol{x_i}$. 
+
+Similarly, let $\mu_i(\widetilde{\boldsymbol{x_i}})=\hat{\tilde{p_i}}=\frac{1}{1+\exp(-\widetilde{\boldsymbol{x_i'}}\hat{\tilde{\boldsymbol{\beta}}})}$ be the estimated probability by observed data $\widetilde{\boldsymbol{x_i}}$.
+
+For general logistic regression model, the estimation is unbiased in terms of binomial proportion and predicted probability. That is $\mathbb{E}[y_i-\mu_i(\boldsymbol{x_i})]=0$. Therefore, we also have $\mathbb{E}\{\boldsymbol{x_i}[y_i-\mu_i(\boldsymbol{x_i})]\}=\boldsymbol0$. 
+
+If there are measurement errors in covariates, similar estimates will lead to a biased estimation, which means
+$$B=\mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]\}\ne \boldsymbol0.$$
+where B is the bias.
+
+However, if we can subtract this bias from the original form, we will get an unbiased estimation. Then, from the unbiased estimation, we can solve the eqution to get our estimated parameters $\boldsymbol{\beta}$. To be specific,
+
+\begin{align*}
+  B &= \mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]\} \\
+  &= \mathbb{E}\{(\boldsymbol{x_i}+\boldsymbol{u_i})[y_i-\mu_i(\boldsymbol{x_i}+\boldsymbol{u_i})]\}
+\end{align*}
+
+By first-order Taylor expansion of matrix form, 
+\begin{align*}
+  \mu_i(\boldsymbol{x_i}+\boldsymbol{u_i}) &= \mu_i(\boldsymbol{x_i}) + \boldsymbol{u_i}'\cdot D\mu_i(\boldsymbol{x_i}) \\
+  &= \mu_i(\boldsymbol{x_i}) + \boldsymbol{u_i}'\cdot \frac{d \mu_i(\boldsymbol{x_i})}{d \boldsymbol{x_i}} \\
+  &= \mu_i(\boldsymbol{x_i}) + \boldsymbol{u_i}'\cdot \frac{d \eta_i(\boldsymbol{x_i})}{d \boldsymbol{x_i}} \frac{d \mu_i(\boldsymbol{x_i})}{d \eta_i(\boldsymbol{x_i})}\qquad \text{where }\eta_i(\boldsymbol{x_i}) =\boldsymbol{x_i}'\boldsymbol{\beta} \\
+  &= \mu_i(\boldsymbol{x_i}) + \boldsymbol{u_i}' \boldsymbol{\beta} \Dot{\mu_i}\qquad \text{where }\Dot{\mu_i}=\frac{d \mu_i(\boldsymbol{x_i})}{d \eta_i(\boldsymbol{x_i})}
+\end{align*}
+
+Then, we have 
+\begin{align*}
+  B &= \mathbb{E}\{(\boldsymbol{x_i}+\boldsymbol{u_i})[y_i-\mu_i(\boldsymbol{x_i}) - 
+  \boldsymbol{u_i}' \boldsymbol{\beta} \Dot{\mu_i}]\mid \boldsymbol{x_i}\} \\
+  &= \mathbb{E}\{\boldsymbol{x_i}[y_i-\mu_i(\boldsymbol{x_i})] - \boldsymbol{x_i}\boldsymbol{u_i}' \boldsymbol{\beta} \Dot{\mu_i} + \boldsymbol{u_i}[y_i-\mu_i(\boldsymbol{x_i})] - \boldsymbol{u_i}\boldsymbol{u_i}' \boldsymbol{\beta} \Dot{\mu_i}\mid \boldsymbol{x_i}\} \\
+  &= \mathbb{E}\{- \boldsymbol{u_i}\boldsymbol{u_i}' \boldsymbol{\beta} \Dot{\mu_i}\mid \boldsymbol{x_i}\} \\
+  &= -\Sigma_i\boldsymbol{\beta} \Dot{\mu_i}
+\end{align*}
+where $\Dot{\mu_i}=\frac{d \mu_i(\boldsymbol{x_i})}{d \eta_i(\boldsymbol{x_i})}$. It could be easily calculated in R by ***binomial()mu.eta*** option in *glm* function.
+
+Now, we can substract this bias at the begining so that we can get an unbiased estimation by solving a non-linear eqution of $\boldsymbol{\beta}$.
+$$\mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]-B\}=0.$$
+By Monte Carlo method,
+$$\frac1m\sum_{j=1}^m\widetilde{\boldsymbol{x}}_{im}[y_{im}-\mu_i(\widetilde{\boldsymbol{x}}_{im})]+\hat{\Sigma_i}\boldsymbol{\beta} \dot{\mu_i}=0.$$
+Finally, we get a non-linear equation of $\boldsymbol{\beta}$. Solving it by function ***nleqslv*** in R, we will get an unbiased estimation of parameters $\hat{\boldsymbol{\beta}}$.
+
+# Simulation Study
+
+## Simulated Data
+
+## Result
+
+# Conclusion
+
+
+
+
