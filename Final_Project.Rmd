@@ -1,5 +1,5 @@
 ---
-title: "An Unbiased Estimation Method of Errors-in-Variables Logistic Regression Model"
+title: "An Unbiased Estimation Method for Errors-in-Variables Logistic Regression Model"
 author:
   - Sen Yang^[<sen.2.yang@uconn.edu>; M.S. student at
     Department of Statistics, University of Connecticut.] &
@@ -14,7 +14,7 @@ biblio-style: asa
 output:
   bookdown::pdf_document2
 abstract:
-  An Unbiased Estimation Method of Errors-in-Variables Logistic Regression Model
+  An Unbiased Estimation Method for Errors-in-Variables Logistic Regression Model
 ---
 
 
@@ -125,9 +125,43 @@ Finally, we get a non-linear equation system of $\boldsymbol{\beta}$. Solving it
 
 # Simulation Study
 
-## Simulated Data
+## Generate an Errors-in-variables Sample
 
-## Result
+For simplicity, we assume
+
+- $\Sigma_1=\Sigma_2=...=\Sigma_n=\Sigma=I$.
+
+- $\boldsymbol{x_i}=(1,X_1,X_2,X_3)$ with $X_1\sim N(10,1^2)$, $X_2\sim N(20,3^2)$ and $X_3\sim N(-40,2^2)$.
+
+- $\boldsymbol{\beta}=(\beta_0,\beta_1,\beta_2,\beta_3)$ with $\beta_0=5$, $\beta_1=0.5$, $\beta_2=1.5$, $\beta_3=1$.
+
+- $m=10,n=1000$
+
+By our assumption, $y_i=\frac{1}{1+\exp(-\beta_0-\beta_1X_1-\beta_2X_2-\beta_3X_3)}+\epsilon_i$ with $\epsilon_i\sim N(0,1)\; i.i.d.$
+
+Generate Errors-in-variables Sample based on these assumptions.
+
+``` {r samples, echo=T}
+# Generate EIV sample
+n<-1000
+m<-10
+k<-3
+U_mtx <- data.frame(u1=rnorm(m*n),u2=rnorm(m*n),u3=rnorm(m*n))
+rep_n <- rep(m,n)
+X_true <- data.frame(x1=rep(rnorm(n, 10,1),rep_n),x2=rep(rnorm(n,20,3),rep_n),x3=rep(rnorm(n,-40,2),rep_n))
+X_tld <- X_true + U_mtx
+
+eta <- 5 + 0.5*X_true$x1 + 1.5*X_true$x2 + X_true$x3
+y_i <- 1/(1+exp(-eta))
+hist(y_i)
+z_i <- rbinom(m*n,1,y_i)
+
+df = data.frame(y=z_i,x1=X_true$x1,x2=X_true$x2,x3=X_true$x3)
+glm_z <- glm( y~x1+x2+x3,data=df,family="binomial")
+
+```
+
+## Estimation and Results
 
 # Conclusion
 
