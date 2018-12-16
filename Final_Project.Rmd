@@ -92,7 +92,7 @@ If there are measurement errors in covariates, similar estimates will lead to a 
 $$B=\mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]\}\ne \boldsymbol0.$$
 where B is the bias.
 
-However, if we can subtract this bias from the original form, we will get an unbiased estimation. Then, from the unbiased estimation, we can solve the eqution to get our estimated parameters $\boldsymbol{\beta}$. To be specific,
+However, if we can subtract this bias from the original form, we will get an unbiased estimation. Then, from the unbiased estimation, we can solve the eqution system to get our estimated parameters $\boldsymbol{\beta}$. To be specific,
 
 \begin{align*}
   B &= \mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]\} \\
@@ -117,11 +117,11 @@ Then, we have
 \end{align*}
 where $\Dot{\mu_i}=\frac{d \mu_i(\boldsymbol{x_i})}{d \eta_i(\boldsymbol{x_i})}$. It could be easily calculated in R by ***binomial()mu.eta*** option in *glm* function.
 
-Now, we can substract this bias at the begining so that we can get an unbiased estimation by solving a non-linear eqution of $\boldsymbol{\beta}$.
+Now, we can substract this bias at the begining so that we can get an unbiased estimation by solving a non-linear eqution system of $\boldsymbol{\beta}$.
 $$\mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]-B\}=0.$$
 By Monte Carlo method,
-$$\frac1{N}\sum_{i=1}^n\sum_{j=1}^m\widetilde{\boldsymbol{x}}_{im}[y_{i}-\mu_i(\widetilde{\boldsymbol{x}}_{im})]+\frac1{n}\sum_{i=1}^n\hat{\Sigma_i}\boldsymbol{\beta} \dot{\mu_i}=0.$$
-Finally, we get a non-linear equation of $\boldsymbol{\beta}$. Solving it by function ***nleqslv*** in R, we will get an unbiased estimation of parameters $\hat{\boldsymbol{\beta}}$.
+$$\frac1{N}\sum_{i=1}^n\sum_{j=1}^m\widetilde{\boldsymbol{x}}_{im}[y_{i}-\mu_i(\widetilde{\boldsymbol{x}}_{im})]+\frac1{n}\sum_{i=1}^n\hat{\Sigma_i}\boldsymbol{\beta} \dot{\mu_i}=0\qquad \text{with } N=nm.$$
+Finally, we get a non-linear equation system of $\boldsymbol{\beta}$. Solving it by function ***nleqslv*** in R, we will get an unbiased estimation of parameters $\hat{\boldsymbol{\beta}}$.
 
 # Simulation Study
 
