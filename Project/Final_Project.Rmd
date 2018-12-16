@@ -1,5 +1,5 @@
 ---
-title: "An Unbiased Estimation Method of Errors-in-Variables Logistic Regression Model"
+title: "An Unbiased Estimation Method for Errors-in-Variables Logistic Regression Model"
 author:
   - Sen Yang^[<sen.2.yang@uconn.edu>; M.S. student at
     Department of Statistics, University of Connecticut.] &
@@ -14,7 +14,7 @@ biblio-style: asa
 output:
   bookdown::pdf_document2
 abstract:
-  An Unbiased Estimation Method of Errors-in-Variables Logistic Regression Model
+  It is well known that if independent variables are measured with erorrs, the ordinary least squared estimates are not unbiased. This is also true for logistic regression models. In this project, we are seeking an unbiased estimation method for logistic regression model. By building up an non-linear equation system of $\mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]-B\}=\boldsymbol0$, we are able to get an unbiased estimation by solving the equation system of $\boldsymbol{\beta}$. A simlation study is followed up to validate the improvement of estimation.
 ---
 
 
@@ -92,7 +92,7 @@ If there are measurement errors in covariates, similar estimates will lead to a 
 $$B=\mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]\}\ne \boldsymbol0.$$
 where B is the bias.
 
-However, if we can subtract this bias from the original form, we will get an unbiased estimation. Then, from the unbiased estimation, we can solve the eqution to get our estimated parameters $\boldsymbol{\beta}$. To be specific,
+However, if we can subtract this bias from the original form, we will get an unbiased estimation. Then, from the unbiased estimation, we can solve the eqution system to get our estimated parameters $\boldsymbol{\beta}$. To be specific,
 
 \begin{align*}
   B &= \mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]\} \\
@@ -115,22 +115,89 @@ Then, we have
   &= \mathbb{E}\{- \boldsymbol{u_i}\boldsymbol{u_i}' \boldsymbol{\beta} \Dot{\mu_i}\mid \boldsymbol{x_i}\} \\
   &= -\Sigma_i\boldsymbol{\beta} \Dot{\mu_i}
 \end{align*}
-where $\Dot{\mu_i}=\frac{d \mu_i(\boldsymbol{x_i})}{d \eta_i(\boldsymbol{x_i})}$. It could be easily calculated in R by ***binomial()mu.eta*** option in *glm* function.
+where $\Dot{\mu_i}=\frac{d \mu_i(\boldsymbol{x_i})}{d \eta_i(\boldsymbol{x_i})}$. It could be easily calculated in R by ***binomial()$mu.eta*** option in *glm* function.
 
-Now, we can substract this bias at the begining so that we can get an unbiased estimation by solving a non-linear eqution of $\boldsymbol{\beta}$.
-$$\mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]-B\}=0.$$
+Now, we can substract this bias at the begining so that we can get an unbiased estimation by solving a non-linear eqution system of $\boldsymbol{\beta}$.
+$$\mathbb{E}\{\widetilde{\boldsymbol{x_i}}[y_i-\mu_i(\widetilde{\boldsymbol{x_i}})]-B\}=\boldsymbol0.$$
 By Monte Carlo method,
-$$\frac1{N}\sum_{i=1}^n\sum_{j=1}^m\widetilde{\boldsymbol{x}}_{im}[y_{i}-\mu_i(\widetilde{\boldsymbol{x}}_{im})]+\frac1{n}\sum_{i=1}^n\hat{\Sigma_i}\boldsymbol{\beta} \dot{\mu_i}=0.$$
-Finally, we get a non-linear equation of $\boldsymbol{\beta}$. Solving it by function ***nleqslv*** in R, we will get an unbiased estimation of parameters $\hat{\boldsymbol{\beta}}$.
+$$\frac1{N}\sum_{i=1}^n\sum_{j=1}^m\widetilde{\boldsymbol{x}}_{im}[y_{i}-\mu_i(\widetilde{\boldsymbol{x}}_{im})]+\frac1{n}\sum_{i=1}^n\hat{\Sigma_i}\boldsymbol{\beta} \dot{\mu_i}=\boldsymbol0\qquad \text{with } N=n\cdot m.$$
+Finally, we get a non-linear equation system of $\boldsymbol{\beta}$. Solving it by function ***nleqslv*** in R, we will get an unbiased estimation of parameters $\hat{\boldsymbol{\beta}}$.
 
 # Simulation Study
 
-## Simulated Data
+## Generate an Errors-in-variables Sample
 
-## Result
+For simplicity, we assume
 
-# Conclusion
+- $\Sigma_1=\Sigma_2=...=\Sigma_n=\Sigma=I$.
 
+- $\boldsymbol{x_i}=(1,X_1,X_2,X_3)$ with $X_1\sim N(10,1^2)$, $X_2\sim N(20,3^2)$ and $X_3\sim N(-40,2^2)$.
+
+- $\boldsymbol{\beta}=(\beta_0,\beta_1,\beta_2,\beta_3)$ with $\beta_0=5$, $\beta_1=0.5$, $\beta_2=1.5$, $\beta_3=1$.
+
+- $m=10,n=1000$
+
+By our assumption, $y_i=\frac{1}{1+\exp(-\beta_0-\beta_1X_1-\beta_2X_2-\beta_3X_3)}+\epsilon_i$ with $\epsilon_i\sim N(0,1)\; i.i.d.$. 
+
+Generate Errors-in-variables Sample based on these assumptions.
+
+``` {r samples, echo=T}
+# Generate EIV sample
+n<-1000; m<-10; k<-3
+set.seed(2019)
+U_mtx <- data.frame(u1=rnorm(m*n),u2=rnorm(m*n),u3=rnorm(m*n))
+rep_n <- rep(m,n)
+X_true <- data.frame(x1=rep(rnorm(n, 10,1),rep_n),x2=rep(rnorm(n,20,3),rep_n),x3=rep(rnorm(n,-40,2),rep_n))
+X_tld <- X_true + U_mtx
+
+eta <- 5 + 0.5*X_true$x1 + 1.5*X_true$x2 + X_true$x3
+y_i <- 1/(1+exp(-eta))
+hist(y_i)
+z_i <- rbinom(m*n,1,y_i)
+```
+
+## Simulation
+
+Given $y,\widetilde{X_1},\widetilde{X_2},...$ and $\Sigma_1=\Sigma_2=...=\Sigma_n=\Sigma$, the variance-corariance matrix of all errors will be
+$$\Sigma_u= \begin{bmatrix} \Sigma & 0 & 0 & \dots &0 \\ 0&\Sigma&0&\dots&0 \\ 0&0&\Sigma&\dots&0 \\ \vdots&\vdots &\vdots&\ddots&\vdots\\ 0&0&0&\dots&\Sigma \end{bmatrix}$$
+
+Therefore, the non-linear equation system will be simplified as
+$$\sum_{i=1}^n\sum_{j=1}^m\widetilde{\boldsymbol{x}}_{im}[y_{i}-\mu_i(\widetilde{\boldsymbol{x}}_{im})]+\hat{\Sigma}\boldsymbol{\beta} \sum_{i=1}^n\sum_{j=1}^m\dot{\mu_i}=\boldsymbol0.$$
+
+``` {r est, echo=T}
+
+# Estimation
+df_true <- data.frame(y=z_i,x1=X_true$x1,x2=X_true$x2,x3=X_true$x3)
+df_obs <- data.frame(y=z_i,x1=X_tld$x1,x2=X_tld$x2,x3=X_tld$x3)
+true_glm <- glm( y~x1+x2+x3,data=df_true,family="binomial")
+obs_glm <- glm( y~x1+x2+x3,data=df_obs,family="binomial")
+
+mean_xobs <- NULL
+for (i in 1:n) {
+  rep_mean <- t(matrix(rep(colMeans(X_tld[(m*(i-1)+1):(m*i),]),m), nrow = 3))
+  mean_xobs <- rbind(mean_xobs, rep_mean)
+}
+
+X_tld_mtx <- data.frame(x0=rep(1,m*n),X_tld)
+cov_i <- cov(data.frame(u0=rep(0,m*n),U_mtx))
+beta_fn <- function(beta) {
+ eqa_v <- colSums(X_tld*(y_i-obs_glm$fitted.values))+ 
+    cov(X_tld-mean_xobs) %*% beta * sum(obs_glm$family$mu.eta(obs_glm$linear.predictors))
+ eqa_v
+}
+
+nleqslv::nleqslv(c(1,2,3),beta_fn)$x
+```
+
+\vspace{1cm}
+
+# Reference {-}
+
+[1] Wikipedia. _Errors-in-variables models_ https://en.wikipedia.org/wiki/Errors-in-variables_models
+
+[2] Wikipedia. _Taylor series_ https://en.wikipedia.org/wiki/Taylor_series
+
+[3] Rhonda Robinson Clark (1982 July). THE ERROR-IN-VARIABLES PROBLEM IN THE LOGISTIC REGRESSION MODEL. _Institute of Statistics Mimeo Series, No. 1407_
 
 
 
